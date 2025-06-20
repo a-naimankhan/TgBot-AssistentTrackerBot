@@ -6,6 +6,7 @@ import (
 	"strings"
 	"tgprogressbot/bot"
 	"tgprogressbot/db"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -27,7 +28,9 @@ func main() {
 
 	//go startHTTPserver()
 	for {
-		updates, err := bot.GetUpdates(offset) //проверка того работает ли бот
+		updates, err := bot.GetUpdates(offset)
+		time.Sleep(1s)
+		//проверка того работает ли бот
 		if err != nil {
 			fmt.Println("Ошибка:", err)
 			continue
