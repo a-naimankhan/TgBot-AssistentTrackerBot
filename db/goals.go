@@ -7,9 +7,9 @@ import (
 
 func AddGoal(chatId int64, goal string, deadline time.Time, remainder int) error {
 	_, err := DB.Exec(`
-		INSERT INTO goals (user_id, goal, deadline, remainder_days)
-		VALUES ($1, $2, $3, $4)
-	`, chatId, goal, deadline, remainder)
+		INSERT INTO goals (user_id, goal, deadline, completed)
+		VALUES ($1, $2, $3,  , $4)
+	`, chatId, goal, deadline, nil)
 	return err
 }
 

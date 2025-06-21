@@ -126,7 +126,7 @@ func handleAddGoals(chatId int64, args string) {
 	matches := re.FindStringSubmatch(args)
 
 	if len(matches) != 4 {
-		SendMessage(chatId, "❗ Формат: /addgoals \"твоя цель\" DD-MM-YYYY N (через сколько дней напоминать) обьязательно в ковчках")
+		SendMessage(chatId, "❗ Формат: /addgoals \"твоя цель\" DD-MM-YYYY N (через сколько дней напоминать(пока что не работает)) обьязательно в ковчках")
 		return
 	}
 
@@ -155,6 +155,24 @@ func handleAddGoals(chatId int64, args string) {
 	SendMessage(chatId, "🎯 Цель добавлена: \""+goal+"\"\n"+
 		"⏳ Дедлайн: "+deadline.Format("02 Jan 2006")+"\n"+
 		"🔁 Напоминание каждые "+strconv.Itoa(remainder)+" дней")
+}
+
+func handleListGoals(chatId int64, args string) {
+	goals, err := db.GetGoals(chatId)
+	if err != nil {
+		SendMessage(chatId, "faced some problems while getting data")
+		fmt.Println(err)
+		return
+	}
+
+	if len(goals) == 0 {
+		SendMessage(chatId, "📭 У тебя пока нет целей. Добавь их с помощью /addgoals")
+		return
+	}
+
+	message := "Your goals : \n" + strings.Join(goals, "\n")
+	SendMessage(chatId, message)
+
 }
 
 func handleAddWords(chatID int64, args string) {
@@ -187,24 +205,6 @@ func handleAddWords(chatID int64, args string) {
 	}()
 }
 
-func handleListGoals(chatId int64, args string) {
-	goals, err := db.GetGoals(chatId)
-	if err != nil {
-		SendMessage(chatId, "faced some problems while getting data")
-		fmt.Println(err)
-		return
-	}
-
-	if len(goals) == 0 {
-		SendMessage(chatId, "📭 У тебя пока нет целей. Добавь их с помощью /addgoals")
-		return
-	}
-
-	message := "Your goals : \n" + strings.Join(goals, "\n")
-	SendMessage(chatId, message)
-
-}
-
 func handleListWords(chatID int64, args string) {
 	words, err := db.GetUserWords(chatID)
 	if err != nil {
@@ -232,6 +232,8 @@ func handleHelp(chatID int64, args string) {
 	5. reminder (Set the Reminder)
 	6. timer {time} (Tells when the time has gone)
 	7./rituals shows some of my rituals to be more focused.
+	8./addgoals "{goal}" DD-MM-YYYY random number . You can add your goals here 
+	9./listgoals shows your goals and when u wanted to finish them
 	DM me if you want to see something new here is my tg @itachi0824
 `
 	SendMessage(chatID, message)
