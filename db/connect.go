@@ -47,15 +47,27 @@ func runMigrations(db *sql.DB) error {
 }
 
 func InitDB() error {
-	if err := runMigrations(DB); err != nil {
-		log.Fatal("Migration failed:", err)
-	}
 	connStr := os.Getenv("DB_URL")
+	if connStr == "" {
+		log.Fatal("❌ DB_URL is not set")
+	}
+
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
-		return err
+		return fmt.Errorf("❌ Failed to open DB: %w", err)
 	}
-	fmt.Println("DB is connected :3")
-	return DB.Ping()
+
+	if err := DB.Ping(); err != nil {
+		return fmt.Errorf("❌ Failed to connect to DB: %w", err)
+	}
+
+	log.Println("✅ DB is connected")
+
+	// Теперь можно запускать миграции
+	if err := runMigrations(DB); err != nil {
+		log.Fatal("❌ Migration failed:", err)
+	}
+
+	return nil
 }
