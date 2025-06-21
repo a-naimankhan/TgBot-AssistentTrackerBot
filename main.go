@@ -29,7 +29,7 @@ func main() {
 	//go startHTTPserver()
 	for {
 		updates, err := bot.GetUpdates(offset)
-		time.Sleep(1s)
+		time.Sleep(1 * time.Second)
 		//проверка того работает ли бот
 		if err != nil {
 			fmt.Println("Ошибка:", err)
