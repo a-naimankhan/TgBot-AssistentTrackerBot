@@ -217,7 +217,7 @@ func handleListWords(chatID int64, args string) {
 }
 
 func handleStart(chatID int64, args string) {
-	SendMessage(chatID, " Hello! I'm your tracker for your progress . I hope I can help to improve you effectivity in any type of spheres :D  ")
+	SendMessage(chatID, " Hello! I'm your tracker for your progress . I hope I can help to improve you effectivity in any type of spheres :D   use /help to know more about this bot")
 }
 
 func handleHelp(chatID int64, args string) {
