@@ -228,9 +228,9 @@ func handleHelp(chatID int64, args string) {
 	1. /start
 	2. /add {word} {translation} {time} (Add a new word to learn into vocabulary)
 	3. /listwords Shows the every word that you added.
-	4. tracker (Shows what you wanted to do)
-	5. reminder (Set the Reminder)
-	6. timer {time} (Tells when the time has gone)
+	4. tracker (Shows what you wanted to do) (didn't add yet)
+	5. /remainder {time} {thing to remind (write as one string for_example)}
+	6. /timer {time} (Tells when the time has gone)
 	7./rituals shows some of my rituals to be more focused.
 	8./addgoals "{goal}" DD-MM-YYYY random number . You can add your goals here 
 	9./listgoals shows your goals and when u wanted to finish them
@@ -276,7 +276,7 @@ func handleRemainder(chatID int64, args string) {
 
 	go func() {
 		time.Sleep(duration)
-		SendMessage(chatID, "<b> Remainding: </b>  "+message)
+		SendMessage(chatID, " Remainding:  "+message)
 	}()
 }
 func handleAbout(chatID int64, args string) {
