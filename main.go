@@ -21,6 +21,10 @@ func init() {
 }
 
 func main() {
+	if err := db.runMigrations(DB); err != nil {
+		log.Fatal("Migration failed:", err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // fallback
