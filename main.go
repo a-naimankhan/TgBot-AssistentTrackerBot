@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"os"
 	"strings"
 	"tgprogressbot/bot"
 	"tgprogressbot/db"
@@ -12,18 +10,6 @@ import (
 )
 
 func main() {
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080" // fallback
-	}
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Bot is running.")
-	})
-
-	log.Println("Listening on port", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
 
 	err := db.InitDB() // подключение дб
 	if err != nil {
