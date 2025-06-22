@@ -256,6 +256,7 @@ func handleHelp(chatID int64, args string) {
 	7./rituals shows some of my rituals to be more focused.
 	8./addgoals "{goal}" DD-MM-YYYY random number . You can add your goals here 
 	9./listgoals shows your goals and when u wanted to finish them
+	10. /test let you test the the word you added
 	DM me if you want to see something new here is my tg @itachi0824
 `
 	SendMessage(chatID, message)
