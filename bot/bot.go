@@ -97,28 +97,50 @@ func SendMessage(chatID int64, text string) error { //отправляет со�
 	return nil
 }
 
-/*func HandleTest(chatID int64, args string) {
-	word, correctAns, count, err := db.GetRandomWord(chatID)
+func HandleTest(chatID int64, args string) {
+	word, correctAns, count, is_learned, err := db.GetRandomWord(chatID)
 	if err != nil {
 		SendMessage(chatID, "You haven't added any word yet. Use /add .")
 	}
-	SendMessage(chatID, "Write your a translation of "+word)
-	if strings.TrimSpace(args) == "" {
-		SendMessage(chatID, "What is the meaning of : "+word+"?")
-	}
-	userans := strings.ToLower(strings.Trimspace(args))
-	correctans := strings.Split(strings.ToLower(correctAns), ";")
 
-	Is
-	if strings.ToLower(correctAns) == strings.ToLower(ans[1]) {
-		SendMessage(chatID, "You've Got it Correct")
-		count++
-	} else {
-		SendMessage(chatID, "You've Got it wrong all of the attemps will be 0 ")
-		count = 0
+	if strings.TrimSpace(args) == "" {
+		//request an ans
+		SendMessage(chatID, "What is meaning of : "+word)
+		return
 	}
-	DB.Exec("UPDATE words SET correct_count = ($1) WHERE user_id = ($2)", count, chatID)
-} */
+
+	UserAns := strings.ToLower(strings.TrimSpace(args))
+	correctAnsList := strings.Split(strings.ToLower(correctAns), ";")
+
+	//check
+
+	isCorrect := false
+	for _, ans := range correctAnsList {
+		if UserAns == strings.TrimSpace(ans) {
+			isCorrect = true
+			break
+		}
+
+	}
+
+	if isCorrect {
+		count++
+		SendMessage(chatID, "You guessed it correct gj")
+	} else {
+		count = 0
+		SendMessage(chatID, "Wrong! , your streak now is 0")
+	}
+	if count >= 3 {
+		is_learned = true
+		SendMessage(chatID, "🎉 You've mastered the word:"+word)
+	}
+
+	err = db.UpdateWordCorrectCount(chatID, word, count, is_learned)
+	if err != nil {
+		log.Println("Failed to update the count")
+	}
+
+}
 
 func handleAddGoals(chatId int64, args string) {
 	// regex: "goal in quotes" + space + date + space + number

@@ -31,19 +31,29 @@ func GetUserWords(userid int64) ([]string, error) {
 	return words, nil
 }
 
-func GetRandomWord(userid int64) (string, string, int, error) {
+func GetRandomWord(userid int64) (string, string, int, bool, error) {
 	row := DB.QueryRow(
-		`SELECT word, translation , correct_count
+		`SELECT word, translation , correct_count , is_learned
 		FROM words
-		WHERE user_id = ($1)
+		WHERE user_id = ($1) and is_learned = false
 		ORDER BY RANDOM() 
 		LIMIT 1`, userid)
 	var word, translation string
 	var count int
-	err := row.Scan(&word, &translation, &count)
+	var is_learned bool
+	err := row.Scan(&word, &translation, &count, &is_learned)
 	if err != nil {
-		return "", "", 0, err
+		return "", "", 0, false, err
 	}
 
-	return word, translation, count, nil
+	return word, translation, count, is_learned, nil
+}
+
+func UpdateWordCorrectCount(userID int64, word string, count int, isLearned bool) error {
+	_, err := DB.Exec(`
+		UPDATE words 
+		SET correct_count = $1, is_learned = $2
+		WHERE user_id = $3 AND word = $4`,
+		count, isLearned, userID, word)
+	return err
 }
