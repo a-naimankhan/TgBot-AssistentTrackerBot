@@ -10,12 +10,13 @@ import (
 )
 
 func main() {
-	db.AddNewTable()
+
 	err := db.InitDB() // подключение дб
 	if err != nil {
 		log.Fatalln("found and err while trying to connect with db ", err)
 	}
 
+	db.AddNewTable()
 	offset := 0
 
 	//go startHTTPserver()
