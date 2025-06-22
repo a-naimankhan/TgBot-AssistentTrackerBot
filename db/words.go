@@ -57,3 +57,13 @@ func UpdateWordCorrectCount(userID int64, word string, count int, isLearned bool
 		count, isLearned, userID, word)
 	return err
 }
+
+func AddNewTable() {
+	err := DB.Exec("CREATE TABLE user_state (
+    user_id BIGINT PRIMARY KEY,
+    current_word TEXT,
+    correct_answer TEXT,
+    correct_count INT DEFAULT 0
+);")
+
+}

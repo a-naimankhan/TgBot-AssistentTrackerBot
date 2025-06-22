@@ -43,9 +43,10 @@ var Commands = map[string]func(ChatId int64, args string){
 	"/about":       handleAbout,
 	"/instruction": HandleInstruction,
 	"/test":        HandleTest,
-	"/rituals":     handleRituals,
-	"/addgoals":    handleAddGoals,
-	"/listgoals":   handleListGoals,
+	//"/anstest":     HandleAnsTest,
+	"/rituals":   handleRituals,
+	"/addgoals":  handleAddGoals,
+	"/listgoals": handleListGoals,
 }
 
 type Update struct { //main structure of Update
@@ -106,6 +107,7 @@ func HandleTest(chatID int64, args string) {
 	if strings.TrimSpace(args) == "" {
 		//request an ans
 		SendMessage(chatID, "What is meaning of : "+word)
+		AnsTest(chatID, correctAns)
 		return
 	}
 
@@ -141,6 +143,10 @@ func HandleTest(chatID int64, args string) {
 	}
 
 }
+
+//func AnsTest(chatID int64, correcAns string) {
+//
+//}
 
 func handleAddGoals(chatId int64, args string) {
 	// regex: "goal in quotes" + space + date + space + number
