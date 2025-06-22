@@ -42,10 +42,10 @@ var Commands = map[string]func(ChatId int64, args string){
 	"/timer":       handleTimer,
 	"/about":       handleAbout,
 	"/instruction": HandleInstruction,
-	//"/test":       // HandleTest,
-	"/rituals":   handleRituals,
-	"/addgoals":  handleAddGoals,
-	"/listgoals": handleListGoals,
+	"/test":        HandleTest,
+	"/rituals":     handleRituals,
+	"/addgoals":    handleAddGoals,
+	"/listgoals":   handleListGoals,
 }
 
 type Update struct { //main structure of Update
