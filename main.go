@@ -16,7 +16,7 @@ func main() {
 		log.Fatalln("found and err while trying to connect with db ", err)
 	}
 
-	db.AddNewTable()
+	//db.AddNewTable()
 	offset := 0
 
 	//go startHTTPserver()

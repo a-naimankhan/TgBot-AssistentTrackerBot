@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -32,22 +31,21 @@ func GetUserWords(userid int64) ([]string, error) {
 	return words, nil
 }
 
-func GetRandomWord(userid int64) (string, string, int, bool, error) {
+func GetRandomWord(userid int64) (string, string, int, error) {
 	row := DB.QueryRow(
-		`SELECT word, translation , correct_count , is_learned
+		`SELECT word, translation , correct_count 
 		FROM words
 		WHERE user_id = ($1) and is_learned = false
 		ORDER BY RANDOM() 
 		LIMIT 1`, userid)
 	var word, translation string
 	var count int
-	var is_learned bool
-	err := row.Scan(&word, &translation, &count, &is_learned)
+	err := row.Scan(&word, &translation, &count)
 	if err != nil {
-		return "", "", 0, false, err
+		return "", "", 0, err
 	}
 
-	return word, translation, count, is_learned, nil
+	return word, translation, count, nil
 }
 
 func UpdateWordCorrectCount(userID int64, word string, count int, isLearned bool) error {
@@ -59,7 +57,38 @@ func UpdateWordCorrectCount(userID int64, word string, count int, isLearned bool
 	return err
 }
 
-func AddNewTable() {
+func SetUserState(userID int64, word, correctAns string, count int) error {
+	_, err := DB.Exec(`
+		INSERT INTO user_state (user_id, current_word, correct_answer, correct_count)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (user_id)
+		DO UPDATE SET current_word = $2, correct_answer = $3, correct_count = $4
+	`, userID, word, correctAns, count)
+	return err
+}
+
+type UserState struct {
+	Word       string
+	CorrectAns string
+	Count      int
+}
+
+func GetUserState(userID int64) (*UserState, error) {
+	row := DB.QueryRow(`
+		SELECT current_word, correct_answer, correct_count
+		FROM user_state
+		WHERE user_id = $1
+	`, userID)
+
+	var state UserState
+	err := row.Scan(&state.Word, &state.CorrectAns, &state.Count)
+	if err != nil {
+		return nil, err
+	}
+	return &state, nil
+}
+
+/* func AddNewTable() {
 	_, err := DB.Exec(`CREATE TABLE user_state (
     user_id BIGINT PRIMARY KEY,
     current_word TEXT,
@@ -72,3 +101,4 @@ func AddNewTable() {
 	log.Println("New table added")
 
 }
+*/

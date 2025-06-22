@@ -43,10 +43,10 @@ var Commands = map[string]func(ChatId int64, args string){
 	"/about":       handleAbout,
 	"/instruction": HandleInstruction,
 	"/test":        HandleTest,
-	//"/anstest":     HandleAnsTest,
-	"/rituals":   handleRituals,
-	"/addgoals":  handleAddGoals,
-	"/listgoals": handleListGoals,
+	"/anstest":     AnswerTest,
+	"/rituals":     handleRituals,
+	"/addgoals":    handleAddGoals,
+	"/listgoals":   handleListGoals,
 }
 
 type Update struct { //main structure of Update
@@ -99,54 +99,65 @@ func SendMessage(chatID int64, text string) error { //отправляет со�
 }
 
 func HandleTest(chatID int64, args string) {
-	word, correctAns, count, is_learned, err := db.GetRandomWord(chatID)
+	word, correctAns, count, err := db.GetRandomWord(chatID)
 	if err != nil {
 		SendMessage(chatID, "You haven't added any word yet. Use /add .")
+	}
+
+	err = db.SetUserState(chatID, word, correctAns, count)
+	if err != nil {
+		log.Println("SetUserState failed:", err)
 	}
 
 	if strings.TrimSpace(args) == "" {
 		//request an ans
 		SendMessage(chatID, "What is meaning of : "+word)
+		SendMessage(chatID, "To answer wirte /anstest {your word}")
 		//AnsTest(chatID, correctAns)
 		return
 	}
 
-	UserAns := strings.ToLower(strings.TrimSpace(args))
-	correctAnsList := strings.Split(strings.ToLower(correctAns), ";")
+}
 
-	//check
+func AnswerTest(chatID int64, args string) {
+	state, err := db.GetUserState(chatID)
+	if err != nil {
+		SendMessage(chatID, "❗️You haven't started a test. Use /test.")
+		return
+	}
+
+	userAns := strings.ToLower(strings.TrimSpace(args))
+	correctList := strings.Split(strings.ToLower(state.CorrectAns), ";")
 
 	isCorrect := false
-	for _, ans := range correctAnsList {
-		if UserAns == strings.TrimSpace(ans) {
+	for _, ans := range correctList {
+		if userAns == strings.TrimSpace(ans) {
 			isCorrect = true
 			break
 		}
-
 	}
 
 	if isCorrect {
-		count++
-		SendMessage(chatID, "You guessed it correct gj")
+		state.Count++
+		SendMessage(chatID, "✅ Correct! Streak: "+strconv.Itoa(state.Count))
 	} else {
-		count = 0
-		SendMessage(chatID, "Wrong! , your streak now is 0")
-	}
-	if count >= 3 {
-		is_learned = true
-		SendMessage(chatID, "🎉 You've mastered the word:"+word)
+		state.Count = 0
+		SendMessage(chatID, "❌ Wrong. Streak reset.")
 	}
 
-	err = db.UpdateWordCorrectCount(chatID, word, count, is_learned)
+	isLearned := false
+	if state.Count >= 3 {
+		isLearned = true
+		SendMessage(chatID, "🎉 Word learned: "+state.Word)
+	}
+
+	err = db.UpdateWordCorrectCount(chatID, state.Word, state.Count, isLearned)
 	if err != nil {
-		log.Println("Failed to update the count")
+		log.Println("Update word failed:", err)
 	}
 
+	// Можно сбросить user_state или оставить
 }
-
-//func AnsTest(chatID int64, correcAns string) {
-//
-//}
 
 func handleAddGoals(chatId int64, args string) {
 	// regex: "goal in quotes" + space + date + space + number
