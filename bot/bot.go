@@ -107,7 +107,7 @@ func HandleTest(chatID int64, args string) {
 	if strings.TrimSpace(args) == "" {
 		//request an ans
 		SendMessage(chatID, "What is meaning of : "+word)
-		AnsTest(chatID, correctAns)
+		//AnsTest(chatID, correctAns)
 		return
 	}
 
